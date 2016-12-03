@@ -1,0 +1,24 @@
+{
+    "name": "guidocella/eloquent-insert-on-duplicate-key",
+    "type": "library",
+    "description": "Functions for INSERT ON DUPLICATE KEY UPDATE and INSERT IGNORE with Eloquent",
+    "keywords": ["laravel", "eloquent", "database", "mysql"],
+    "license": "MIT",
+    "require": {
+        "php": ">=5.4.0",
+        "illuminate/database": "^5"
+    },
+    "autoload": {
+        "files": [
+            "src/functions.php"
+        ],
+        "classmap": [
+            "src/QueryBuilder.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "InsertOnDuplicateKey\\": "tests"
+        }
+    }
+}
