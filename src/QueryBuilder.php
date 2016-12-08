@@ -18,7 +18,7 @@ class QueryBuilder
     /**
      * Build the question mark placeholders for an insert query.
      *
-     * @param  array $values
+     * @param  array[] $values
      * @return string
      */
     public static function buildQuestionMarks(array $values)

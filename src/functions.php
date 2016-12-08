@@ -9,7 +9,7 @@ if (!function_exists('insert_on_duplicate_key')) {
      * Run an insert on duplicate key update statement against the database.
      *
      * @param  Model|BelongsToMany $model
-     * @param  array               $values
+     * @param  array[]             $values
      * @return bool
      */
     function insert_on_duplicate_key($model, array $values)
@@ -26,7 +26,7 @@ if (!function_exists('insert_ignore')) {
      * Run an insert ignore statement against the database.
      *
      * @param  Model|BelongsToMany $model
-     * @param  array               $values
+     * @param  array[]             $values
      * @return bool
      */
     function insert_ignore($model, array $values)
