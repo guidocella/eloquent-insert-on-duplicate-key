@@ -18,15 +18,15 @@ class QueryBuilder
     /**
      * Build the question mark placeholders for an insert query.
      *
-     * @param  array $data
+     * @param  array $values
      * @return string
      */
-    public static function buildQuestionMarks(array $data)
+    public static function buildQuestionMarks(array $values)
     {
         $lines = '';
-        $count = count($data[0]);
+        $count = count($values[0]);
 
-        foreach ($data as $row) {
+        foreach ($values as $row) {
             $questionMarks = '';
 
             for ($i = 0; $i < $count; ++$i) {
