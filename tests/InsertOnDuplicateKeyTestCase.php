@@ -7,14 +7,14 @@ use Illuminate\Filesystem\ClassFinder;
 use Illuminate\Filesystem\Filesystem;
 use PHPUnit_Framework_TestCase;
 
-class EloquentTestCase extends PHPUnit_Framework_TestCase
+abstract class InsertOnDuplicateKeyTestCase extends PHPUnit_Framework_TestCase
 {
     /**
      * Setup the test environment.
      *
      * @return void
      */
-    public function setUp()
+    protected function setUp()
     {
         $db = new DB;
 
@@ -44,7 +44,7 @@ class EloquentTestCase extends PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function migrate()
+    protected function migrate()
     {
         $fileSystem = new Filesystem;
         $classFinder = new ClassFinder;
