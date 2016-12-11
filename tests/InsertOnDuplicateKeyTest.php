@@ -8,12 +8,12 @@ use InsertOnDuplicateKey\Models\User;
 
 class InsertOnDuplicateKeyTest extends InsertOnDuplicateKeyTestCase
 {
-    protected $user1 = [
+    protected $updatedUser = [
         'id'   => 1,
-        'name' => 'User One',
+        'name' => 'User 1',
     ];
 
-    protected $pivotRow1 = [
+    protected $updatedPivotRow = [
         'user_id'    => 1,
         'role_id'    => 1,
         'expires_at' => '2000-01-01 00:00:00',
@@ -26,14 +26,14 @@ class InsertOnDuplicateKeyTest extends InsertOnDuplicateKeyTestCase
     {
         parent::setUp();
 
-        $attachRecords = [];
+        $data = [
+            ['id' => 1, 'name' => 'foo'],
+            ['id' => 2, 'name' => 'foo'],
+            ['id' => 3, 'name' => 'foo'],
+        ];
 
-        for ($i = 1; $i <= 3; $i++) {
-            User::create(['name' => 'foo']);
-            Role::create(['name' => 'foo']);
-
-            $attachRecords[$i] = ['expires_at' => Carbon::now()];
-        }
+        User::insert($data);
+        Role::insert($data);
 
         (new User(['id' => 1]))->roles()->attach([
             1 => ['expires_at' => Carbon::now()],
@@ -41,58 +41,59 @@ class InsertOnDuplicateKeyTest extends InsertOnDuplicateKeyTestCase
         ]);
     }
 
-    public function testInsertOnDuplicateKey_throughModel()
+    public function testInsertOnDuplicateKey()
     {
-        $user2 = [
+        $updatedUser2 = [
             'id'   => 2,
-            'name' => 'User Two',
+            'name' => 'User 2',
         ];
 
-        insert_on_duplicate_key(new User, [$this->user1, $user2]);
+        User::insertOnDuplicateKey([$this->updatedUser, $updatedUser2]);
 
-        $this->seeInDatabase('users', $this->user1);
-        $this->seeInDatabase('users', $user2);
+        $this->seeInDatabase('users', $this->updatedUser);
+        $this->seeInDatabase('users', $updatedUser2);
     }
 
-    public function testInsertOnDuplicateKey_intoPivot()
+    public function testInsertIgnore()
     {
-        $pivotRow2 = [
+        $newUser = [
+            'id'   => 4,
+            'name' => 'User 2',
+        ];
+
+        User::insertIgnore([$this->updatedUser, $newUser]);
+
+        $this->dontSeeInDatabase('users', $this->updatedUser);
+        $this->seeInDatabase('users', $newUser);
+    }
+
+    public function testAttachOnDuplicateKey()
+    {
+        (new User(['id' => 1]))->roles()->attachOnDuplicateKey([
+            1 => ['expires_at' => '2000-01-01 00:00:00'],
+            2 => ['expires_at' => Carbon::tomorrow()],
+        ]);
+
+        $this->seeInDatabase('role_user', $this->updatedPivotRow);
+        $this->seeInDatabase('role_user', [
             'user_id'    => 1,
             'role_id'    => 2,
             'expires_at' => Carbon::tomorrow(),
-        ];
-
-
-        insert_on_duplicate_key((new User())->roles(), [$this->pivotRow1, $pivotRow2]);
-
-        $this->seeInDatabase('role_user', $this->pivotRow1);
-        $this->seeInDatabase('role_user', $pivotRow2);
+        ]);
     }
 
-    public function testInsertIgnore_throughModel()
+    public function testAttachIgnore()
     {
-        $user2 = [
-            'id'   => 4,
-            'name' => 'User Two',
-        ];
+        (new User(['id' => 1]))->roles()->attachIgnore([
+            1 => ['expires_at' => '2000-01-01 00:00:00'],
+            3 => ['expires_at' => Carbon::tomorrow()],
+        ]);
 
-        insert_ignore(new User, [$this->user1, $user2]);
-
-        $this->dontSeeInDatabase('users', $this->user1);
-        $this->seeInDatabase('users', $user2);
-    }
-
-    public function testInsertIgnore_intoPivot()
-    {
-        $pivotRow2 = [
+        $this->dontSeeInDatabase('role_user', $this->updatedPivotRow);
+        $this->seeInDatabase('role_user', [
             'user_id'    => 1,
             'role_id'    => 3,
             'expires_at' => Carbon::tomorrow(),
-        ];
-
-        insert_ignore((new User())->roles(), [$this->pivotRow1, $pivotRow2]);
-
-        $this->dontSeeInDatabase('role_user', $this->pivotRow1);
-        $this->seeInDatabase('role_user', $pivotRow2);
+        ]);
     }
 }

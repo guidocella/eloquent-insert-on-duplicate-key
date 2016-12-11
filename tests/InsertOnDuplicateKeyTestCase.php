@@ -2,13 +2,28 @@
 
 namespace InsertOnDuplicateKey;
 
-use Illuminate\Database\Capsule\Manager as DB;
+use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Filesystem\ClassFinder;
 use Illuminate\Filesystem\Filesystem;
-use PHPUnit_Framework_TestCase;
+use Illuminate\Foundation\Testing\TestCase;
+use Illuminate\Support\Facades\Schema;
 
-abstract class InsertOnDuplicateKeyTestCase extends PHPUnit_Framework_TestCase
+abstract class InsertOnDuplicateKeyTestCase extends TestCase
 {
+    /**
+     * Creates the application.
+     *
+     * @return \Symfony\Component\HttpKernel\HttpKernelInterface
+     */
+    public function createApplication()
+    {
+        $app = require __DIR__ . '/../vendor/laravel/laravel/bootstrap/app.php';
+
+        $app->make(Kernel::class)->bootstrap();
+
+        return $app;
+    }
+
     /**
      * Setup the test environment.
      *
@@ -16,27 +31,18 @@ abstract class InsertOnDuplicateKeyTestCase extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $db = new DB;
+        parent::setUp();
 
-        $db->addConnection([
-            'driver'    => 'mysql',
-            'host'      => 'localhost',
-            'database'  => 'eloquent_insert_on_duplicate_key',
-            'username'  => 'root',
-            'password'  => '',
-            'charset'   => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-            'prefix'    => '',
-        ]);
+        $this->app['config']->set('database.connections.mysql.username', 'root');
+        $this->app['config']->set('database.connections.mysql.database', 'eloquent_insert_on_duplicate_key');
 
-        $db->bootEloquent();
-        $db->setAsGlobal();
-
-        if (DB::table('information_schema.tables')->where('table_schema', 'eloquent_insert_on_duplicate_key')->exists()) {
+        if (Schema::hasTable('users')) {
             $this->truncateTables();
         } else {
             $this->migrate();
         }
+
+        $this->app->register(InsertOnDuplicateKeyServiceProvider::class);
     }
 
     /**
@@ -72,46 +78,8 @@ abstract class InsertOnDuplicateKeyTestCase extends PHPUnit_Framework_TestCase
          */
         $name = 'Tables_in_eloquent_insert_on_duplicate_key';
 
-        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-
-        foreach (DB::select('SHOW TABLES') as $table) {
-            DB::table($table->$name)->truncate();
+        foreach ($this->app['db']->select('SHOW TABLES') as $table) {
+            $this->app['db']->table($table->$name)->truncate();
         }
-
-        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
-    }
-
-    /**
-     * Assert that a given where condition exists in the database.
-     *
-     * @param  string  $table
-     * @param  array  $data
-     * @return void
-     */
-    protected function seeInDatabase($table, array $data)
-    {
-        $this->assertTrue(
-            DB::table($table)->where($data)->exists(),
-            sprintf(
-                'Unable to find row in database table [%s] that matched attributes [%s].', $table, json_encode($data)
-            )
-        );
-    }
-
-    /**
-     * Assert that a given where condition does not exists in the database.
-     *
-     * @param  string  $table
-     * @param  array  $data
-     * @return void
-     */
-    protected function dontSeeInDatabase($table, array $data)
-    {
-        $this->assertFalse(
-            DB::table($table)->where($data)->exists(),
-            sprintf(
-                'Found unexpected records in database table [%s] that matched attributes [%s].', $table, json_encode($data)
-            )
-        );
     }
 }
