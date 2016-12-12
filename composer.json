@@ -9,7 +9,8 @@
         "laravel/framework": "^5"
     },
     "require-dev": {
-        "laravel/laravel": "^5.3"
+        "laravel/laravel": "^5.3",
+        "phpunit/phpunit": "^5"
     },
     "autoload": {
         "psr-4": {
