@@ -12,7 +12,7 @@ composer require guidocella/eloquent-insert-on-duplicate-key
 
 Then add the service provider to your Package Service Providers in `config/app.php`.
 
-```phpg
+```php
 InsertOnDuplicateKey\InsertOnDuplicateKeyServiceProvider::class,
 ```
 

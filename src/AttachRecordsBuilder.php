@@ -28,8 +28,8 @@ class AttachRecordsBuilder extends BelongsToMany
      * @param  array $attributes
      * @return array
      */
-    public function publicCreateAttachRecords($ids, array $attributes)
+    public function createAttachRecords($ids, array $attributes)
     {
-        return $this->createAttachRecords($ids, $attributes);
+        return parent::createAttachRecords($ids, $attributes);
     }
 }

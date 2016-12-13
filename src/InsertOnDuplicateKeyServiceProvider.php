@@ -144,7 +144,7 @@ class InsertOnDuplicateKeyServiceProvider extends ServiceProvider
             $attachRecordsBuilder = new AttachRecordsBuilder($foreignKey, $foreignKeyValue, $otherKey);
 
             $this->insertOnDuplicateKey(
-                $attachRecordsBuilder->publicCreateAttachRecords((array)$id, $attributes),
+                $attachRecordsBuilder->createAttachRecords((array)$id, $attributes),
                 $type,
                 $this->joins[0]->table
             );
