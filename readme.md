@@ -10,9 +10,9 @@ Install this package with composer.
 composer require guidocella/eloquent-insert-on-duplicate-key
 ```
 
-Then add the service provider to your Package Service Providers in config/app.php.
+Then add the service provider to your Package Service Providers in `config/app.php`.
 
-```php
+```phpg
 InsertOnDuplicateKey\InsertOnDuplicateKeyServiceProvider::class,
 ```
 
@@ -20,7 +20,7 @@ InsertOnDuplicateKey\InsertOnDuplicateKeyServiceProvider::class,
 
 ### Models
 
-Call insertOnDuplicateKey() or insertIgnore() from a Model with the array of data to insert in its table.
+Call `insertOnDuplicateKey` or `insertIgnore` from a Model with the array of data to insert in its table.
 
 ```php
     $data = [
@@ -35,7 +35,7 @@ Call insertOnDuplicateKey() or insertIgnore() from a Model with the array of dat
 
 ### Pivot tables
 
-You can call attachOnDuplicateKey() and attachIgnore() from a BelongsToMany relation to run the inserts in its pivot table. You can pass the data in all of the formats accepted by attach().
+You can call `attachOnDuplicateKey` and `attachIgnore` from a `BelongsToMany` relation to run the inserts in its pivot table. You can pass the data in all of the formats accepted by `attach`.
 
 ```php
     $pivotData = [
