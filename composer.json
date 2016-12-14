@@ -1,12 +1,12 @@
 {
-    "name": "guidocella/eloquent-insert-on-duplicate-key",
+    "name": "guidocella/laravel-insert-on-duplicate-key",
     "type": "library",
     "description": "Macros for INSERT ON DUPLICATE KEY UPDATE and INSERT IGNORE with Eloquent",
     "keywords": ["laravel", "eloquent", "database", "mysql"],
     "license": "MIT",
     "require": {
-        "php": ">=5.4.0",
-        "laravel/framework": "^5.1"
+        "php": ">=5.6.4",
+        "illuminate/database": "^5.3"
     },
     "require-dev": {
         "laravel/laravel": "^5.3",

@@ -1,4 +1,4 @@
-# Eloquent Insert On Duplicate Key And Insert Ignore
+# Laravel Insert On Duplicate Key And Insert Ignore
 
 This package provides macros to run INSERT ... ON DUPLICATE KEY UPDATE and INSERT IGNORE queries on models and pivot tables with Laravel's ORM Eloquent using MySql.
 
