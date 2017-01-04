@@ -21,7 +21,7 @@ class InsertOnDuplicateKeyServiceProvider extends ServiceProvider
          * @param  string|null $pivotTable
          * @return bool
          */
-        Builder::macro('insertIgnore', function ($values, $pivotTable = null) {
+        Builder::macro('insertIgnore', function (array $values, $pivotTable = null) {
             return $this->insertOnDuplicateKey($values, 'ignore', $pivotTable);
         });
 
@@ -33,7 +33,7 @@ class InsertOnDuplicateKeyServiceProvider extends ServiceProvider
          * @param  string|null $pivotTable
          * @return bool
          */
-        Builder::macro('insertOnDuplicateKey', function ($values, $type = 'on duplicate key', $pivotTable = null) {
+        Builder::macro('insertOnDuplicateKey', function (array $values, $type = 'on duplicate key', $pivotTable = null) {
             if (empty($values)) {
                 return true;
             }
