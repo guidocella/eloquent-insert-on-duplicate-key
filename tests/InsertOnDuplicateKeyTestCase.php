@@ -36,11 +36,7 @@ abstract class InsertOnDuplicateKeyTestCase extends TestCase
         $this->app['config']->set('database.connections.mysql.username', 'root');
         $this->app['config']->set('database.connections.mysql.database', 'eloquent_insert_on_duplicate_key');
 
-        if (Schema::hasTable('users')) {
-            $this->truncateTables();
-        } else {
-            $this->migrate();
-        }
+        Schema::hasTable('users') ? $this->truncateTables() : $this->migrate();
 
         $this->app->register(InsertOnDuplicateKeyServiceProvider::class);
     }

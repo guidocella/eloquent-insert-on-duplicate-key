@@ -18,14 +18,4 @@ class CreateUsersTable extends Migration
             $table->string('name');
         });
     }
-
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        Schema::drop('users');
-    }
 }
