@@ -20,4 +20,14 @@ class CreateRoleUserTable extends Migration
             $table->primary(['user_id', 'role_id']);
         });
     }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::drop('role_user');
+    }
 }
