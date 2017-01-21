@@ -6,7 +6,6 @@ use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Filesystem\ClassFinder;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Testing\TestCase;
-use Illuminate\Support\Facades\Schema;
 
 abstract class InsertOnDuplicateKeyTestCase extends TestCase
 {
@@ -36,11 +35,7 @@ abstract class InsertOnDuplicateKeyTestCase extends TestCase
         $this->app['config']->set('database.connections.mysql.username', 'root');
         $this->app['config']->set('database.connections.mysql.database', 'eloquent_insert_on_duplicate_key');
 
-        if (Schema::hasTable('users')) {
-            $this->truncateTables();
-        } else {
-            $this->migrate();
-        }
+        $this->migrate('up');
 
         $this->app->register(InsertOnDuplicateKeyServiceProvider::class);
     }
@@ -48,9 +43,10 @@ abstract class InsertOnDuplicateKeyTestCase extends TestCase
     /**
      * Run package database migrations.
      *
+     * @param  string $method
      * @return void
      */
-    protected function migrate()
+    protected function migrate($method)
     {
         $fileSystem = new Filesystem;
         $classFinder = new ClassFinder;
@@ -59,27 +55,19 @@ abstract class InsertOnDuplicateKeyTestCase extends TestCase
             $fileSystem->requireOnce($file);
             $migrationClass = $classFinder->findClass($file);
 
-            (new $migrationClass)->up();
+            (new $migrationClass)->$method();
         }
     }
 
     /**
-     * Truncate the database tables.
+     * Clean up the testing environment before the next test.
      *
      * @return void
      */
-    protected function truncateTables()
+    protected function tearDown()
     {
-        /**
-         * The name of the field of the classes returned from DB::select('SHOW TABLES')
-         * whose value is the name of each table.
-         *
-         * @var string
-         */
-        $name = 'Tables_in_eloquent_insert_on_duplicate_key';
+        $this->migrate('down');
 
-        foreach ($this->app['db']->select('SHOW TABLES') as $table) {
-            $this->app['db']->table($table->$name)->truncate();
-        }
+        parent::tearDown();
     }
 }
