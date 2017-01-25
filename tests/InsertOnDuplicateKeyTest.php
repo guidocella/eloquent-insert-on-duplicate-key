@@ -50,8 +50,8 @@ class InsertOnDuplicateKeyTest extends InsertOnDuplicateKeyTestCase
 
         User::insertOnDuplicateKey([$this->updatedUser, $updatedUser2]);
 
-        $this->seeInDatabase('users', $this->updatedUser);
-        $this->seeInDatabase('users', $updatedUser2);
+        $this->assertDatabaseHas('users', $this->updatedUser);
+        $this->assertDatabaseHas('users', $updatedUser2);
     }
 
     public function testInsertIgnore()
@@ -63,8 +63,8 @@ class InsertOnDuplicateKeyTest extends InsertOnDuplicateKeyTestCase
 
         User::insertIgnore([$this->updatedUser, $newUser]);
 
-        $this->dontSeeInDatabase('users', $this->updatedUser);
-        $this->seeInDatabase('users', $newUser);
+        $this->assertDatabaseMissing('users', $this->updatedUser);
+        $this->assertDatabaseHas('users', $newUser);
     }
 
     public function testAttachOnDuplicateKey()
@@ -74,8 +74,8 @@ class InsertOnDuplicateKeyTest extends InsertOnDuplicateKeyTestCase
             2 => ['expires_at' => Carbon::tomorrow()],
         ]);
 
-        $this->seeInDatabase('role_user', $this->updatedPivotRow);
-        $this->seeInDatabase('role_user', [
+        $this->assertDatabaseHas('role_user', $this->updatedPivotRow);
+        $this->assertDatabaseHas('role_user', [
             'user_id'    => 1,
             'role_id'    => 2,
             'expires_at' => Carbon::tomorrow(),
@@ -89,8 +89,8 @@ class InsertOnDuplicateKeyTest extends InsertOnDuplicateKeyTestCase
             3 => ['expires_at' => Carbon::tomorrow()],
         ]);
 
-        $this->dontSeeInDatabase('role_user', $this->updatedPivotRow);
-        $this->seeInDatabase('role_user', [
+        $this->assertDatabaseMissing('role_user', $this->updatedPivotRow);
+        $this->assertDatabaseHas('role_user', [
             'user_id'    => 1,
             'role_id'    => 3,
             'expires_at' => Carbon::tomorrow(),

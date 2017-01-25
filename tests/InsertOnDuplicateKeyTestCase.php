@@ -3,7 +3,7 @@
 namespace InsertOnDuplicateKey;
 
 use Illuminate\Contracts\Console\Kernel;
-use Illuminate\Filesystem\ClassFinder;
+use InsertOnDuplicateKey\ClassFinder;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Testing\TestCase;
 
