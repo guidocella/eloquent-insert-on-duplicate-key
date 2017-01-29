@@ -3,7 +3,6 @@
 namespace InsertOnDuplicateKey;
 
 use Illuminate\Contracts\Console\Kernel;
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Testing\TestCase;
 
 abstract class InsertOnDuplicateKeyTestCase extends TestCase
@@ -47,14 +46,12 @@ abstract class InsertOnDuplicateKeyTestCase extends TestCase
      */
     protected function migrate($method)
     {
-        $fileSystem = new Filesystem;
-        $classFinder = new ClassFinder;
+        $migrator = $this->app['migrator'];
 
-        foreach ($fileSystem->files(__DIR__ . '/Migrations') as $file) {
-            $fileSystem->requireOnce($file);
-            $migrationClass = $classFinder->findClass($file);
+        foreach ($migrator->getMigrationFiles(__DIR__ . '/Migrations') as $file) {
+            require_once $file;
 
-            (new $migrationClass)->$method();
+            ($migrator->resolve($migrator->getMigrationName($file)))->$method();
         }
     }
 
