@@ -130,10 +130,10 @@ class InsertOnDuplicateKeyServiceProvider extends ServiceProvider
             $foreignKeyValue = $this->wheres[0]['value'];
             $relatedKey = $this->joins[0]->wheres[0]['second'];
 
-            $attachRecordsBuilder = new AttachRecordsFormatter($foreignKey, $foreignKeyValue, $relatedKey);
+            $attachRecordsFormatter = new AttachRecordsFormatter($foreignKey, $foreignKeyValue, $relatedKey);
 
             $this->insertOnDuplicateKey(
-                $attachRecordsBuilder->formatAttachRecords((array)$id, $attributes),
+                $attachRecordsFormatter->formatAttachRecords((array)$id, $attributes),
                 $type,
                 $this->joins[0]->table
             );
