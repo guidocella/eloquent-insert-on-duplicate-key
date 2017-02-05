@@ -100,6 +100,7 @@ class InsertOnDuplicateKeyServiceProvider extends ServiceProvider
 
         /**
          * Attach models to the parent ignoring existing associations.
+         * TODO: Use BelongsToMany macros after dropping 5.3 support.
          *
          * @param  mixed $id
          * @param  array $attributes
