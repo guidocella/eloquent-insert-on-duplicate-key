@@ -21,5 +21,12 @@
         "psr-4": {
             "InsertOnDuplicateKey\\": "tests"
         }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "InsertOnDuplicateKey\\InsertOnDuplicateKeyServiceProvider"
+            ]
+        }
     }
 }
