@@ -6,11 +6,11 @@
     "license": "MIT",
     "require": {
         "php": ">=5.6.4",
-        "illuminate/database": "5.3.|5.4.*"
+        "illuminate/database": "5.3.*|5.4.*|5.5.*"
     },
     "require-dev": {
-        "laravel/laravel": "5.4.*",
-        "phpunit/phpunit": "^5"
+        "laravel/laravel": "dev-master",
+        "phpunit/phpunit": "^6"
     },
     "autoload": {
         "psr-4": {

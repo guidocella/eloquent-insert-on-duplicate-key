@@ -15,9 +15,8 @@ class AttachRecordsFormatter extends BelongsToMany
      */
     public function __construct($foreignKey, $foreignKeyValue, $relatedKey)
     {
-        $this->foreignKey = $foreignKey;
-        $this->relatedKey = $this->otherKey = $relatedKey;
-        // $otherKey was used in Laravel <=5.3.
+        $this->foreignPivotKey = $this->foreignKey /* Laravel 5.4 */ = $foreignKey;
+        $this->relatedPivotKey = $this->relatedKey /* Laravel 5.4 */ = $this->otherKey /* Laravel 5.3 */ = $relatedKey;
 
         $this->parent = new DummyModel(['id' => $foreignKeyValue]);
     }
@@ -31,8 +30,9 @@ class AttachRecordsFormatter extends BelongsToMany
      */
     public function formatAttachRecords($ids, array $attributes)
     {
-        $method = method_exists($this, 'createAttachRecords') ? 'createAttachRecords' : 'formatAttachRecords';
-        // createAttachRecords was used in Laravel <=5.3.
+        $method = method_exists($this, 'formatAttachRecords')
+            ? 'formatAttachRecords' // Laravel >= 5.4
+            : 'createAttachRecords'; // Laravel 5.3
 
         return parent::$method($ids, $attributes);
     }
