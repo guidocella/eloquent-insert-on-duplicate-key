@@ -10,7 +10,7 @@ Install this package with composer.
 composer require guidocella/eloquent-insert-on-duplicate-key
 ```
 
-Then add the service provider to your Package Service Providers in `config/app.php`.
+If you don't use Package Auto-Discovery add the service provider to your Package Service Providers in `config/app.php`.
 
 ```php
 InsertOnDuplicateKey\InsertOnDuplicateKeyServiceProvider::class,
