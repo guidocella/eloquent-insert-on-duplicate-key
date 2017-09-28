@@ -4,6 +4,7 @@ namespace InsertOnDuplicateKey;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
@@ -18,23 +19,21 @@ class InsertOnDuplicateKeyServiceProvider extends ServiceProvider
         /**
          * Run an insert ignore statement against the database.
          *
-         * @param  array       $values
-         * @param  string|null $pivotTable
+         * @param  array $values
          * @return bool
          */
-        Builder::macro('insertIgnore', function (array $values, $pivotTable = null) {
-            return $this->insertOnDuplicateKey($values, 'ignore', $pivotTable);
+        Builder::macro('insertIgnore', function (array $values) {
+            return $this->insertOnDuplicateKey($values, 'ignore');
         });
 
         /**
          * Run an insert on duplicate key update statement against the database.
          *
-         * @param  array       $values
-         * @param  string      $type
-         * @param  string|null $pivotTable
+         * @param  array  $values
+         * @param  string $type
          * @return bool
          */
-        Builder::macro('insertOnDuplicateKey', function (array $values, $type = 'on duplicate key', $pivotTable = null) {
+        Builder::macro('insertOnDuplicateKey', function (array $values, $type = 'on duplicate key') {
             // Since every insert gets treated like a batch insert, we will make sure the
             // bindings are structured in a way that is convenient for building these
             // inserts statements by verifying the elements are actually an array.
@@ -64,9 +63,9 @@ class InsertOnDuplicateKeyServiceProvider extends ServiceProvider
             // Essentially we will force every insert to be treated as a batch insert which
             // simply makes creating the SQL easier for us since we can utilize the same
             // basic routine regardless of an amount of records given to us to insert.
-            $table = $this->grammar->wrapTable($pivotTable ?: $this->from);
+            $table = $this->grammar->wrapTable($this->from);
 
-            if (! is_array(reset($values))) {
+            if (!is_array(reset($values))) {
                 $values = [$values];
             }
 
@@ -78,7 +77,7 @@ class InsertOnDuplicateKeyServiceProvider extends ServiceProvider
             // to the query. Each insert should have the exact same amount of parameter
             // bindings so we will loop through the record and parameterize them all.
             $parameters = collect($values)->map(function ($record) {
-                return '('.$this->grammar->parameterize($record).')';
+                return '(' . $this->grammar->parameterize($record) . ')';
             })->implode(', ');
 
             $sql = 'insert ' . ($type === 'ignore' ? 'ignore ' : '') . "into $table ($columnsString) values $parameters";
@@ -100,44 +99,36 @@ class InsertOnDuplicateKeyServiceProvider extends ServiceProvider
 
         /**
          * Attach models to the parent ignoring existing associations.
-         * TODO: Use BelongsToMany macros after dropping 5.3 support.
          *
          * @param  mixed $id
          * @param  array $attributes
-         * @return bool
+         * @return void
          */
-        Builder::macro('attachIgnore', function ($id, array $attributes = []) {
-            $this->attachOnDuplicateKey($id, $attributes, 'ignore');
+        BelongsToMany::macro('attachIgnore', function ($id, array $attributes = [], $touch = true) {
+            $this->newPivotStatement()->insertIgnore($this->formatAttachRecords(
+                $this->parseIds($id), $attributes
+            ));
+
+            if ($touch) {
+                $this->touchIfTouching();
+            }
         });
 
         /**
          * Attach models to the parent updating existing associations.
          *
-         * @param  mixed  $id
-         * @param  array  $attributes
-         * @param  string $type
-         * @return bool
+         * @param  mixed $id
+         * @param  array $attributes
+         * @return void
          */
-        Builder::macro('attachOnDuplicateKey', function ($id, array $attributes = [], $type = 'on duplicate key') {
-            if ($id instanceof Model) {
-                $id = $id->getKey();
+        BelongsToMany::macro('attachOnDuplicateKey', function ($id, array $attributes = [], $touch = true) {
+            $this->newPivotStatement()->insertOnDuplicateKey($this->formatAttachRecords(
+                $this->parseIds($id), $attributes
+            ));
+
+            if ($touch) {
+                $this->touchIfTouching();
             }
-
-            if ($id instanceof Collection) {
-                $id = $id->modelKeys();
-            }
-
-            $foreignKey = $this->wheres[0]['column'];
-            $foreignKeyValue = $this->wheres[0]['value'];
-            $relatedKey = $this->joins[0]->wheres[0]['second'];
-
-            $attachRecordsFormatter = new AttachRecordsFormatter($foreignKey, $foreignKeyValue, $relatedKey);
-
-            $this->insertOnDuplicateKey(
-                $attachRecordsFormatter->formatAttachRecords((array)$id, $attributes),
-                $type,
-                $this->joins[0]->table
-            );
         });
     }
 }

@@ -10,12 +10,6 @@ Install this package with composer.
 composer require guidocella/eloquent-insert-on-duplicate-key
 ```
 
-If you don't use Package Auto-Discovery add the service provider to your Package Service Providers in `config/app.php`.
-
-```php
-InsertOnDuplicateKey\InsertOnDuplicateKeyServiceProvider::class,
-```
-
 ## Usage
 
 ### Models
@@ -35,7 +29,7 @@ Call `insertOnDuplicateKey` or `insertIgnore` from a Model with the array of dat
 
 ### Pivot tables
 
-You can call `attachOnDuplicateKey` and `attachIgnore` from a `BelongsToMany` relation to run the inserts in its pivot table. You can pass the data in all of the formats accepted by `attach`.
+Call `attachOnDuplicateKey` and `attachIgnore` from a `BelongsToMany` relation to run the inserts in its pivot table. You can pass the data in all of the formats accepted by `attach`.
 
 ```php
     $pivotData = [
