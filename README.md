@@ -14,7 +14,7 @@ composer require guidocella/eloquent-insert-on-duplicate-key
 
 ### Models
 
-Call `insertOnDuplicateKey` or `insertIgnore` from a Model with the array of data to insert in its table.
+Call `insertOnDuplicateKey` or `insertIgnore` from a model with the array of data to insert in its table.
 
 ```php
     $data = [
