@@ -11,6 +11,7 @@ class InsertOnDuplicateKeyTest extends InsertOnDuplicateKeyTestCase
     protected $updatedUser = [
         'id'   => 1,
         'name' => 'User 1',
+        'email' => 'foo1@gmail.com'
     ];
 
     protected $updatedPivotRow = [
@@ -26,14 +27,17 @@ class InsertOnDuplicateKeyTest extends InsertOnDuplicateKeyTestCase
     {
         parent::setUp();
 
-        $data = [
+        User::insert([
+            ['id' => 1, 'name' => 'foo', 'email' => 'foo1@gmail.com'],
+            ['id' => 2, 'name' => 'foo', 'email' => 'foo2@gmail.com'],
+            ['id' => 3, 'name' => 'foo', 'email' => 'foo3@gmail.com'],
+        ]);
+
+        Role::insert([
             ['id' => 1, 'name' => 'foo'],
             ['id' => 2, 'name' => 'foo'],
             ['id' => 3, 'name' => 'foo'],
-        ];
-
-        User::insert($data);
-        Role::insert($data);
+        ]);
 
         (new User(['id' => 1]))->roles()->attach([
             1 => ['expires_at' => Carbon::now()],
@@ -46,6 +50,7 @@ class InsertOnDuplicateKeyTest extends InsertOnDuplicateKeyTestCase
         $updatedUser2 = [
             'id'   => 2,
             'name' => 'User 2',
+            'email' => 'foo2@gmail.com'
         ];
 
         User::insertOnDuplicateKey([$this->updatedUser, $updatedUser2]);
@@ -54,11 +59,42 @@ class InsertOnDuplicateKeyTest extends InsertOnDuplicateKeyTestCase
         $this->assertDatabaseHas('users', $updatedUser2);
     }
 
+    public function testInsertOnDuplicateKeyFullUpdate()
+    {
+        $updatedUser = [
+            'id'   => 1,
+            'email' => 'bar@gmail.com',
+            'name' => 'Bar'
+        ];
+
+        User::insertOnDuplicateKey([$updatedUser]);
+
+        $updated_user = User::find(1);
+        $this->assertEquals('Bar',$updated_user->name);
+        $this->assertEquals('bar@gmail.com',$updated_user->email);
+    }
+
+    public function testInsertOnDuplicateKeyPartialUpdate()
+    {
+        $updatedUser = [
+            'id'   => 1,
+            'email' => 'bar@gmail.com',
+            'name' => 'Bar'
+        ];
+
+        User::insertOnDuplicateKey([$this->updatedUser, $updatedUser],['name']);
+
+        $updated_user = User::find(1);
+        $this->assertEquals('Bar',$updated_user->name);
+        $this->assertEquals('foo1@gmail.com',$updated_user->email);
+    }
+
     public function testInsertIgnore()
     {
         $newUser = [
             'id'   => 4,
             'name' => 'User 2',
+            'email' => null
         ];
 
         User::insertIgnore([$this->updatedUser, $newUser]);

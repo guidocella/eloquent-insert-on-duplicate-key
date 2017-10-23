@@ -23,7 +23,7 @@ class InsertOnDuplicateKeyServiceProvider extends ServiceProvider
          * @return bool
          */
         Builder::macro('insertIgnore', function (array $values) {
-            return $this->insertOnDuplicateKey($values, 'ignore');
+            return $this->insertOnDuplicateKey($values, null, 'ignore');
         });
 
         /**
@@ -33,7 +33,7 @@ class InsertOnDuplicateKeyServiceProvider extends ServiceProvider
          * @param  string $type
          * @return bool
          */
-        Builder::macro('insertOnDuplicateKey', function (array $values, $type = 'on duplicate key') {
+        Builder::macro('insertOnDuplicateKey', function (array $values, array $columns_to_update = null, $type = 'on duplicate key') {
             // Since every insert gets treated like a batch insert, we will make sure the
             // bindings are structured in a way that is convenient for building these
             // inserts statements by verifying the elements are actually an array.
@@ -88,7 +88,11 @@ class InsertOnDuplicateKeyServiceProvider extends ServiceProvider
 
             $sql .= ' on duplicate key update ';
 
-            foreach ($columns as $column) {
+            //update all columns by default
+            if(is_null($columns_to_update))
+                $columns_to_update = $columns;
+
+            foreach ($columns_to_update as $column) {
                 $column = $this->grammar->wrap($column);
 
                 $sql .= "$column = VALUES($column),";
