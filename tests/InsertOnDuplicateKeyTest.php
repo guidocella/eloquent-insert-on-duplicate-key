@@ -65,14 +65,14 @@ class InsertOnDuplicateKeyTest extends InsertOnDuplicateKeyTestCase
             [
                 [
                     'id'    => 1,
-                    'name'  => 'new name 2',
-                    'email' => 'new2@gmail.com',
+                    'name'  => 'new name',
+                    'email' => 'new@gmail.com',
                 ],
             ],
             ['name']
         );
 
-        $this->assertDatabaseHas('users', ['id' => 1, 'name' => 'new name 2', 'email' => 'foo@gmail.com']);
+        $this->assertDatabaseHas('users', ['id' => 1, 'name' => 'new name', 'email' => 'foo@gmail.com']);
     }
 
     public function testInsertIgnore()
