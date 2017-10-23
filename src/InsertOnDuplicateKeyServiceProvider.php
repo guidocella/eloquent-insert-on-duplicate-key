@@ -29,11 +29,16 @@ class InsertOnDuplicateKeyServiceProvider extends ServiceProvider
         /**
          * Run an insert on duplicate key update statement against the database.
          *
-         * @param  array  $values
+         * @param  array $values
+         * @param  array $columnsToUpdate
          * @param  string $type
          * @return bool
          */
-        Builder::macro('insertOnDuplicateKey', function (array $values, array $columns_to_update = null, $type = 'on duplicate key') {
+        Builder::macro('insertOnDuplicateKey', function (
+            array $values,
+            array $columnsToUpdate = null,
+            $type = 'on duplicate key'
+        ) {
             // Since every insert gets treated like a batch insert, we will make sure the
             // bindings are structured in a way that is convenient for building these
             // inserts statements by verifying the elements are actually an array.
@@ -88,11 +93,12 @@ class InsertOnDuplicateKeyServiceProvider extends ServiceProvider
 
             $sql .= ' on duplicate key update ';
 
-            //update all columns by default
-            if(is_null($columns_to_update))
-                $columns_to_update = $columns;
+            // We will update all the columns specified in $values by default.
+            if ($columnsToUpdate === null) {
+                $columnsToUpdate = $columns;
+            }
 
-            foreach ($columns_to_update as $column) {
+            foreach ($columnsToUpdate as $column) {
                 $column = $this->grammar->wrap($column);
 
                 $sql .= "$column = VALUES($column),";

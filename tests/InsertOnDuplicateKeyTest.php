@@ -9,9 +9,9 @@ use InsertOnDuplicateKey\Models\User;
 class InsertOnDuplicateKeyTest extends InsertOnDuplicateKeyTestCase
 {
     protected $updatedUser = [
-        'id'   => 1,
-        'name' => 'User 1',
-        'email' => 'foo1@gmail.com'
+        'id'    => 1,
+        'name'  => 'new name 1',
+        'email' => 'new1@gmail.com',
     ];
 
     protected $updatedPivotRow = [
@@ -28,9 +28,9 @@ class InsertOnDuplicateKeyTest extends InsertOnDuplicateKeyTestCase
         parent::setUp();
 
         User::insert([
-            ['id' => 1, 'name' => 'foo', 'email' => 'foo1@gmail.com'],
-            ['id' => 2, 'name' => 'foo', 'email' => 'foo2@gmail.com'],
-            ['id' => 3, 'name' => 'foo', 'email' => 'foo3@gmail.com'],
+            ['id' => 1, 'name' => 'foo', 'email' => 'foo@gmail.com'],
+            ['id' => 2, 'name' => 'foo', 'email' => 'foo@gmail.com'],
+            ['id' => 3, 'name' => 'foo', 'email' => 'foo@gmail.com'],
         ]);
 
         Role::insert([
@@ -45,12 +45,12 @@ class InsertOnDuplicateKeyTest extends InsertOnDuplicateKeyTestCase
         ]);
     }
 
-    public function testInsertOnDuplicateKey()
+    public function testInsertOnDuplicateKeyFullUpdate()
     {
         $updatedUser2 = [
-            'id'   => 2,
-            'name' => 'User 2',
-            'email' => 'foo2@gmail.com'
+            'id'    => 2,
+            'name'  => 'new name 2',
+            'email' => 'new2@gmail.com',
         ];
 
         User::insertOnDuplicateKey([$this->updatedUser, $updatedUser2]);
@@ -59,42 +59,28 @@ class InsertOnDuplicateKeyTest extends InsertOnDuplicateKeyTestCase
         $this->assertDatabaseHas('users', $updatedUser2);
     }
 
-    public function testInsertOnDuplicateKeyFullUpdate()
-    {
-        $updatedUser = [
-            'id'   => 1,
-            'email' => 'bar@gmail.com',
-            'name' => 'Bar'
-        ];
-
-        User::insertOnDuplicateKey([$updatedUser]);
-
-        $updated_user = User::find(1);
-        $this->assertEquals('Bar',$updated_user->name);
-        $this->assertEquals('bar@gmail.com',$updated_user->email);
-    }
-
     public function testInsertOnDuplicateKeyPartialUpdate()
     {
-        $updatedUser = [
-            'id'   => 1,
-            'email' => 'bar@gmail.com',
-            'name' => 'Bar'
-        ];
+        User::insertOnDuplicateKey(
+            [
+                [
+                    'id'    => 1,
+                    'name'  => 'new name 2',
+                    'email' => 'new2@gmail.com',
+                ],
+            ],
+            ['name']
+        );
 
-        User::insertOnDuplicateKey([$this->updatedUser, $updatedUser],['name']);
-
-        $updated_user = User::find(1);
-        $this->assertEquals('Bar',$updated_user->name);
-        $this->assertEquals('foo1@gmail.com',$updated_user->email);
+        $this->assertDatabaseHas('users', ['id' => 1, 'name' => 'new name 2', 'email' => 'foo@gmail.com']);
     }
 
     public function testInsertIgnore()
     {
         $newUser = [
-            'id'   => 4,
-            'name' => 'User 2',
-            'email' => null
+            'id'    => 4,
+            'name'  => 'new name 2',
+            'email' => null,
         ];
 
         User::insertIgnore([$this->updatedUser, $newUser]);
@@ -125,6 +111,8 @@ class InsertOnDuplicateKeyTest extends InsertOnDuplicateKeyTestCase
             3 => ['expires_at' => Carbon::tomorrow()],
         ]);
 
+        // The row with user_id = 1 and role_id = 1
+        // should have kept the initial value of expires_at = now().
         $this->assertDatabaseMissing('role_user', $this->updatedPivotRow);
         $this->assertDatabaseHas('role_user', [
             'user_id'    => 1,
