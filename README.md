@@ -66,9 +66,9 @@ User::insertOnDuplicateKey(
             'b'  => 2,
         ],
     ],
-    [DB::raw('c=c+1'),'name']
+    [DB::raw('c=c+1'),'a']
 );
-// The name will be updated but not the email.
+// The a field will be updated but not the b field. C will be updated to its current value + 1.
 ```
 
 
