@@ -45,7 +45,7 @@ class InsertOnDuplicateKeyTest extends InsertOnDuplicateKeyTestCase
         ]);
     }
 
-    public function testInsertOnDuplicateKeyFullUpdate()
+    public function testInsertOnDuplicateKey()
     {
         $updatedUser2 = [
             'id'    => 2,
