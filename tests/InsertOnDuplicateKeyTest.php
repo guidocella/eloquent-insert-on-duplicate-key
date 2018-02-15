@@ -39,7 +39,7 @@ class InsertOnDuplicateKeyTest extends InsertOnDuplicateKeyTestCase
             ['id' => 3, 'name' => 'foo'],
         ]);
 
-        (new User(['id' => 1]))->roles()->attach([
+        User::make(['id' => 1])->roles()->attach([
             1 => ['expires_at' => Carbon::now()],
             2 => ['expires_at' => Carbon::now()],
         ]);
@@ -91,7 +91,7 @@ class InsertOnDuplicateKeyTest extends InsertOnDuplicateKeyTestCase
 
     public function testAttachOnDuplicateKey()
     {
-        (new User(['id' => 1]))->roles()->attachOnDuplicateKey([
+        User::make(['id' => 1])->roles()->attachOnDuplicateKey([
             1 => ['expires_at' => '2000-01-01 00:00:00'],
             2 => ['expires_at' => Carbon::tomorrow()],
         ]);
@@ -106,7 +106,7 @@ class InsertOnDuplicateKeyTest extends InsertOnDuplicateKeyTestCase
 
     public function testAttachIgnore()
     {
-        (new User(['id' => 1]))->roles()->attachIgnore([
+        User::make(['id' => 1])->roles()->attachIgnore([
             1 => ['expires_at' => '2000-01-01 00:00:00'],
             3 => ['expires_at' => Carbon::tomorrow()],
         ]);
