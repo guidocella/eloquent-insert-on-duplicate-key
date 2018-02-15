@@ -87,7 +87,6 @@ class InsertOnDuplicateKeyServiceProvider extends ServiceProvider
                 return $this->connection->insert($sql, $bindings);
             }
 
-
             $sql .= ' on duplicate key update ';
 
             // We will update all the columns specified in $values by default.

@@ -36,16 +36,11 @@ User::insertIgnore($data);
 If you want to update only certain columns with `insertOnDuplicateKey`, pass them as the 2nd argument.
 
 ```php
-User::insertOnDuplicateKey(
-    [
-        [
-            'id'    => 1,
-            'name'  => 'new name',
-            'email' => 'foo@gmail.com',
-        ],
-    ],
-    ['name']
-);
+User::insertOnDuplicateKey([
+        'id'    => 1,
+        'name'  => 'new name',
+        'email' => 'foo@gmail.com',
+    ], ['name']);
 // The name will be updated but not the email.
 ```
 

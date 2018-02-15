@@ -61,16 +61,11 @@ class InsertOnDuplicateKeyTest extends InsertOnDuplicateKeyTestCase
 
     public function testInsertOnDuplicateKeyPartialUpdate()
     {
-        User::insertOnDuplicateKey(
-            [
-                [
-                    'id'    => 1,
-                    'name'  => 'new name 1',
-                    'email' => 'new@gmail.com',
-                ],
-            ],
-            ['name']
-        );
+        User::insertOnDuplicateKey([
+            'id'    => 1,
+            'name'  => 'new name 1',
+            'email' => 'new@gmail.com',
+        ], ['name']);
 
         $this->assertDatabaseHas('users', ['id' => 1, 'name' => 'new name 1', 'email' => 'foo@gmail.com']);
     }
