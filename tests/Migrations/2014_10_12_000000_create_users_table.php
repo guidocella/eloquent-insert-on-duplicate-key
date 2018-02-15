@@ -17,6 +17,9 @@ class CreateUsersTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('email')->nullable();
+            $table->integer('counter')->default(0);
+            $table->timestamp('counter_updated_at')->nullable();
+            
         });
     }
 

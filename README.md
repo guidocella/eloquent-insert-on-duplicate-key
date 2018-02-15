@@ -49,6 +49,29 @@ User::insertOnDuplicateKey(
 // The name will be updated but not the email.
 ```
 
+Based on `panyanyany` modification (thanks dude), if you want to update certain columns with different values to the inserted one, you can pass the update as Raw query.    
+
+For example, for this SQL query (where c is a "counter" with 0 value as default)
+```php
+INSERT INTO t1 (a,b) VALUES (1,2)
+  ON DUPLICATE KEY UPDATE c=c+1,a=VALUES(a);
+```
+you can pass the update as the 2nd argument  
+
+```php
+User::insertOnDuplicateKey(
+    [
+        [
+            'a'  => 1,
+            'b'  => 2,
+        ],
+    ],
+    [DB::raw('c=c+1'),'a']
+);
+// The a field will be updated but not the b field. C will be updated to its current value + 1.
+```
+
+
 ### Pivot tables
 
 Call `attachOnDuplicateKey` and `attachIgnore` from a `BelongsToMany` relation to run the inserts in its pivot table. You can pass the data in all of the formats accepted by `attach`.

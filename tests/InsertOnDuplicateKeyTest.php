@@ -2,6 +2,7 @@
 
 namespace InsertOnDuplicateKey;
 
+use DB;
 use Carbon\Carbon;
 use InsertOnDuplicateKey\Models\Role;
 use InsertOnDuplicateKey\Models\User;
@@ -120,4 +121,40 @@ class InsertOnDuplicateKeyTest extends InsertOnDuplicateKeyTestCase
             'expires_at' => Carbon::tomorrow(),
         ]);
     }
+/**
+ * This test will update ONLY the counter value to +1
+ *
+ * @return void
+ */
+    public function testCounterUpdate() {
+        //Current value of id:3 name:foo email:foo@gmail.com
+
+        $newUser = [
+            'id'    => 3,
+            'name'  => 'new name c',
+            'email' => 'counter@gmail.com',
+        ];
+        User::insertOnDuplicateKey([$newUser],[DB::raw('counter=counter+1')]);
+        $this->assertDatabaseHas('users',["id"=>3,"name"=>"foo","email"=>"foo@gmail.com","counter"=>1,"counter_updated_at"=>null]);
+      
+    }
+
+    /**
+ * This test will update all data and  the counter value to +1 and the counter_updated_at
+ *
+ * @return void
+ */
+public function testCounterAndDataUpdate() {
+    //Current value of id:3 name:foo email:foo@gmail.com
+
+    $newUser = [
+        'id'    => 3,
+        'name'  => 'new name c',
+        'email' => 'counter@gmail.com',
+    ];
+    $date = Carbon::tomorrow();
+    User::insertOnDuplicateKey([$newUser],['name','email',DB::raw('counter=counter+1'),DB::raw("counter_updated_at='".$date."'")]);
+    $this->assertDatabaseHas('users',["id"=>3,"name"=>"new name c","email"=>"counter@gmail.com","counter"=>1,"counter_updated_at"=>$date]);
+  
+}
 }
