@@ -3,6 +3,7 @@
 namespace InsertOnDuplicateKey;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use InsertOnDuplicateKey\Models\Role;
 use InsertOnDuplicateKey\Models\User;
 
@@ -68,6 +69,17 @@ class InsertOnDuplicateKeyTest extends InsertOnDuplicateKeyTestCase
         ], ['name']);
 
         $this->assertDatabaseHas('users', ['id' => 1, 'name' => 'new name 1', 'email' => 'foo@gmail.com']);
+    }
+
+    public function testInsertOnDuplicateKeyWithRawExpression()
+    {
+        User::insertOnDuplicateKey([
+            'id'    => 1,
+            'name'  => 'new name 1',
+            'email' => DB::raw('CONCAT(email, " bar")'),
+        ]);
+
+        $this->assertDatabaseHas('users', ['id' => 1, 'name' => 'new name 1', 'email' => 'foo@gmail.com bar']);
     }
 
     public function testInsertIgnore()

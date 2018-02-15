@@ -94,10 +94,22 @@ class InsertOnDuplicateKeyServiceProvider extends ServiceProvider
                 $columnsToUpdate = $columns;
             }
 
-            foreach ($columnsToUpdate as $column) {
-                $column = $this->grammar->wrap($column);
+            $expressions = array_filter(reset($values), function ($value) {
+                return $this->grammar->isExpression($value);
+            });
 
-                $sql .= "$column = VALUES($column),";
+            foreach ($columnsToUpdate as $column) {
+                $wrappedColumn = $this->grammar->wrap($column);
+
+                $sql .= "$wrappedColumn = ";
+
+                if (isset($expressions[$column])) {
+                    $sql .= $expressions[$column]->getValue();
+                } else {
+                    $sql .= "VALUES($wrappedColumn)";
+                }
+
+                $sql .= ',';
             }
 
             return $this->connection->insert(rtrim($sql, ','), $bindings);
