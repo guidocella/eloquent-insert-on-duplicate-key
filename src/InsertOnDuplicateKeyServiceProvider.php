@@ -70,10 +70,6 @@ class InsertOnDuplicateKeyServiceProvider extends ServiceProvider
             // basic routine regardless of an amount of records given to us to insert.
             $table = $this->grammar->wrapTable($this->from);
 
-            if (!is_array(reset($values))) {
-                $values = [$values];
-            }
-
             $columns = array_keys(reset($values));
 
             $columnsString = $this->grammar->columnize($columns);
