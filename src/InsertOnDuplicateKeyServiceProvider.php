@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Database\Query\Expression;
+
 
 class InsertOnDuplicateKeyServiceProvider extends ServiceProvider
 {
@@ -93,15 +95,20 @@ class InsertOnDuplicateKeyServiceProvider extends ServiceProvider
 
             $sql .= ' on duplicate key update ';
 
+            
+
             // We will update all the columns specified in $values by default.
             if ($columnsToUpdate === null) {
                 $columnsToUpdate = $columns;
             }
 
             foreach ($columnsToUpdate as $column) {
-                $column = $this->grammar->wrap($column);
-
-                $sql .= "$column = VALUES($column),";
+                if (is_a($column, Expression::class)) {
+                    $sql .= $column->getValue().",";
+                } else {
+                    $column = $this->grammar->wrap($column);
+                    $sql .= "$column = VALUES($column),";
+                }
             }
 
             return $this->connection->insert(rtrim($sql, ','), $bindings);
