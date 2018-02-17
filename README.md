@@ -50,7 +50,7 @@ User::insertOnDuplicateKey([
 
 ##### Update with custom values
 
-You also customize the value with which the columns will be updated when a row already exists by passing an associative array.
+You can customize the value with which the columns will be updated when a row already exists by passing an associative array.
 
 In the following example, if a user with id = 1 doesn't exist, it will be created with name = 'created user'. If it already exists, it will be updated with name = 'updated user'.
 
