@@ -3,6 +3,7 @@
 namespace InsertOnDuplicateKey;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use InsertOnDuplicateKey\Models\Role;
 use InsertOnDuplicateKey\Models\User;
 
@@ -28,20 +29,20 @@ class InsertOnDuplicateKeyTest extends InsertOnDuplicateKeyTestCase
         parent::setUp();
 
         User::insert([
-            ['id' => 1, 'name' => 'foo', 'email' => 'foo@gmail.com'],
-            ['id' => 2, 'name' => 'foo', 'email' => 'foo@gmail.com'],
-            ['id' => 3, 'name' => 'foo', 'email' => 'foo@gmail.com'],
+            ['id' => 1, 'name' => 'old', 'email' => 'old@gmail.com'],
+            ['id' => 2, 'name' => 'old', 'email' => 'old@gmail.com'],
+            ['id' => 3, 'name' => 'old', 'email' => 'old@gmail.com'],
         ]);
 
         Role::insert([
-            ['id' => 1, 'name' => 'foo'],
-            ['id' => 2, 'name' => 'foo'],
-            ['id' => 3, 'name' => 'foo'],
+            ['id' => 1, 'name' => 'old'],
+            ['id' => 2, 'name' => 'old'],
+            ['id' => 3, 'name' => 'old'],
         ]);
 
         User::make(['id' => 1])->roles()->attach([
-            1 => ['expires_at' => Carbon::now()],
-            2 => ['expires_at' => Carbon::now()],
+            1 => ['expires_at' => now()],
+            2 => ['expires_at' => now()],
         ]);
     }
 
@@ -64,17 +65,72 @@ class InsertOnDuplicateKeyTest extends InsertOnDuplicateKeyTestCase
         User::insertOnDuplicateKey([
             'id'    => 1,
             'name'  => 'new name 1',
-            'email' => 'new@gmail.com',
+            'email' => 'new1@gmail.com',
         ], ['name']);
 
-        $this->assertDatabaseHas('users', ['id' => 1, 'name' => 'new name 1', 'email' => 'foo@gmail.com']);
+        $this->assertDatabaseHas('users', ['id' => 1, 'name' => 'new name 1', 'email' => 'old@gmail.com']);
+    }
+
+    public function testInsertOnDuplicateKeyWithStringLiteralInOnDuplicateKeyUpdateClause()
+    {
+        User::insertOnDuplicateKey([
+            [
+                'id'    => 1,
+                'name'  => 'created user',
+                'email' => 'new1@gmail.com',
+            ],
+            [
+                'id'    => 4,
+                'name'  => 'created user',
+                'email' => 'new4@gmail.com',
+            ],
+        ], ['name' => 'updated user']);
+
+        $this->assertDatabaseHas('users', ['id' => 1, 'name' => 'updated user', 'email' => 'old@gmail.com']);
+        $this->assertDatabaseHas('users', ['id' => 4, 'name' => 'created user', 'email' => 'new4@gmail.com']);
+    }
+
+    public function testInsertOnDuplicateKeyWithExpressionInOnDuplicateKeyUpdateClause()
+    {
+        User::insertOnDuplicateKey([
+            [
+                'id'   => 1,
+                'name' => 'created user',
+            ],
+            [
+                'id'   => 4,
+                'name' => 'created user',
+            ],
+        ], ['name' => DB::raw('CONCAT(name, " updated user")')]);
+
+        $this->assertDatabaseHas('users', ['id' => 1, 'name' => 'old updated user']);
+        $this->assertDatabaseHas('users', ['id' => 4, 'name' => 'created user']);
+    }
+
+    public function testInsertOnDuplicateKeyWithMixed2ndArgumentArray()
+    {
+        User::insertOnDuplicateKey([
+            [
+                'id'    => 1,
+                'name'  => 'created user',
+                'email' => 'new1@gmail.com',
+            ],
+            [
+                'id'    => 4,
+                'name'  => 'created user',
+                'email' => 'new4@gmail.com',
+            ],
+        ], ['name' => 'updated user', 'email']);
+
+        $this->assertDatabaseHas('users', ['id' => 1, 'name' => 'updated user', 'email' => 'new1@gmail.com']);
+        $this->assertDatabaseHas('users', ['id' => 4, 'name' => 'created user', 'email' => 'new4@gmail.com']);
     }
 
     public function testInsertIgnore()
     {
         $newUser = [
             'id'    => 4,
-            'name'  => 'new name 2',
+            'name'  => 'new name 4',
             'email' => null,
         ];
 

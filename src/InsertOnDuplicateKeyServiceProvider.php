@@ -2,8 +2,6 @@
 
 namespace InsertOnDuplicateKey;
 
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Arr;
@@ -87,6 +85,7 @@ class InsertOnDuplicateKeyServiceProvider extends ServiceProvider
                 return $this->connection->insert($sql, $bindings);
             }
 
+
             $sql .= ' on duplicate key update ';
 
             // We will update all the columns specified in $values by default.
@@ -94,10 +93,24 @@ class InsertOnDuplicateKeyServiceProvider extends ServiceProvider
                 $columnsToUpdate = $columns;
             }
 
-            foreach ($columnsToUpdate as $column) {
+            foreach ($columnsToUpdate as $key => $value) {
+                $column = is_int($key) ? $value : $key;
                 $column = $this->grammar->wrap($column);
 
-                $sql .= "$column = VALUES($column),";
+                $sql .= "$column = ";
+
+                if (is_int($key)) {
+                    $sql .= "VALUES($column)";
+                } else {
+                    if ($this->grammar->isExpression($value)) {
+                        $sql .= $value->getValue();
+                    } else {
+                        $sql .= '?';
+                        $bindings[] = $value;
+                    }
+                }
+
+                $sql .= ',';
             }
 
             return $this->connection->insert(rtrim($sql, ','), $bindings);

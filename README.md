@@ -33,15 +33,57 @@ User::insertOnDuplicateKey($data);
 User::insertIgnore($data);
 ```
 
-If you want to update only certain columns with `insertOnDuplicateKey`, pass them as the 2nd argument.
+#### Customizing the ON DUPLICATE KEY UPDATE clause
+
+##### Update only certain columns
+
+If you want to update only certain columns, pass them as the 2nd argument.
 
 ```php
 User::insertOnDuplicateKey([
-        'id'    => 1,
-        'name'  => 'new name',
-        'email' => 'foo@gmail.com',
-    ], ['name']);
+    'id'    => 1,
+    'name'  => 'new name',
+    'email' => 'foo@gmail.com',
+], ['name']);
 // The name will be updated but not the email.
+```
+
+##### Update with custom values
+
+You also customize the value with which the columns will be updated when a row already exists by passing an associative array.
+
+In the following example, if a user with id = 1 doesn't exist, it will be created with name = 'created user'. If it already exists, it will be updated with name = 'updated user'.
+
+```php
+User::insertOnDuplicateKey([
+    'id'    => 1,
+    'name'  => 'created user',
+], ['name' => 'updated user']);
+```
+
+The generated SQL is:
+
+```sql
+INSERT INTO `users` (`id`, `name`) VALUES (1, "created user") ON DUPLICATE KEY UPDATE `name` = 'updated user'
+```
+
+You may combine key/value pairs and column names in the 2nd argument to specify the columns to update with a custom literal or expression or with the default `VALUES(column)`. For example:
+
+```php
+User::insertOnDuplicateKey([
+    'id'       => 1,
+    'name'     => 'created user',
+    'email'    => 'new@gmail.com',
+    'password' => 'secret',
+], ['name' => 'updated user', 'email]);
+```
+
+will generate
+
+```sql
+INSERT INTO `users` (`id`, `name`, `email`, `password`)
+VALUES (1, "created user", "new@gmail.com", "secret")
+ON DUPLICATE KEY UPDATE `name` = 'updated user', `email` = VALUES(`email`)
 ```
 
 ### Pivot tables
