@@ -64,7 +64,7 @@ User::insertOnDuplicateKey([
 The generated SQL is:
 
 ```sql
-INSERT INTO `users` (`id`, `name`) VALUES (1, "created user") ON DUPLICATE KEY UPDATE `name` = 'updated user'
+INSERT INTO `users` (`id`, `name`) VALUES (1, "created user") ON DUPLICATE KEY UPDATE `name` = "updated user"
 ```
 
 You may combine key/value pairs and column names in the 2nd argument to specify the columns to update with a custom literal or expression or with the default `VALUES(column)`. For example:
@@ -83,7 +83,7 @@ will generate
 ```sql
 INSERT INTO `users` (`id`, `name`, `email`, `password`)
 VALUES (1, "created user", "new@gmail.com", "secret")
-ON DUPLICATE KEY UPDATE `name` = 'updated user', `email` = VALUES(`email`)
+ON DUPLICATE KEY UPDATE `name` = "updated user", `email` = VALUES(`email`)
 ```
 
 ### Pivot tables
