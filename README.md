@@ -75,7 +75,7 @@ User::insertOnDuplicateKey([
     'name'     => 'created user',
     'email'    => 'new@gmail.com',
     'password' => 'secret',
-], ['name' => 'updated user', 'email]);
+], ['name' => 'updated user', 'email']);
 ```
 
 will generate
