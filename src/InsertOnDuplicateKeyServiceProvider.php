@@ -94,8 +94,7 @@ class InsertOnDuplicateKeyServiceProvider extends ServiceProvider
             }
 
             foreach ($columnsToUpdate as $key => $value) {
-                $column = is_int($key) ? $value : $key;
-                $column = $this->grammar->wrap($column);
+                $column = $this->grammar->wrap(is_int($key) ? $value : $key);
 
                 $sql .= "$column = ";
 
