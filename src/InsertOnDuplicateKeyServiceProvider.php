@@ -100,13 +100,11 @@ class InsertOnDuplicateKeyServiceProvider extends ServiceProvider
 
                 if (is_int($key)) {
                     $sql .= "VALUES($column)";
+                } elseif ($this->grammar->isExpression($value)) {
+                    $sql .= $value->getValue();
                 } else {
-                    if ($this->grammar->isExpression($value)) {
-                        $sql .= $value->getValue();
-                    } else {
-                        $sql .= '?';
-                        $bindings[] = $value;
-                    }
+                    $sql .= '?';
+                    $bindings[] = $value;
                 }
 
                 $sql .= ',';
