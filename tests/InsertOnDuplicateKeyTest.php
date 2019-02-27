@@ -24,7 +24,7 @@ class InsertOnDuplicateKeyTest extends InsertOnDuplicateKeyTestCase
     /**
      * Seed the database.
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 

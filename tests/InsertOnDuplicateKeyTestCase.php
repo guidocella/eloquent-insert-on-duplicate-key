@@ -26,7 +26,7 @@ abstract class InsertOnDuplicateKeyTestCase extends TestCase
      *
      * @return void
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -62,7 +62,7 @@ abstract class InsertOnDuplicateKeyTestCase extends TestCase
      *
      * @return void
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->migrate('down');
 
