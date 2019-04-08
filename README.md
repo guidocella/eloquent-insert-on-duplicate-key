@@ -1,6 +1,6 @@
 # Laravel Insert On Duplicate Key And Insert Ignore
 
-This package provides macros to run INSERT ... ON DUPLICATE KEY UPDATE and INSERT IGNORE queries on models and pivot tables with Laravel's ORM Eloquent using MySql.
+This package provides macros to run INSERT ... ON DUPLICATE KEY UPDATE and INSERT IGNORE queries on models and pivot tables with Laravel's ORM Eloquent using MySql or MariaDB.
 
 ## Installation
 
@@ -88,7 +88,7 @@ ON DUPLICATE KEY UPDATE `name` = "updated user", `email` = VALUES(`email`)
 
 ### Pivot tables
 
-Call `attachOnDuplicateKey` and `attachIgnore` from a `BelongsToMany` relation to run the inserts in its pivot table. You can pass the data in all of the formats accepted by `attach`.
+Call `attachOnDuplicateKey` and `attachIgnore` from a `BelongsToMany` relation to run the inserts in its pivot table. You can pass the data in any of the formats accepted by `attach`.
 
 ```php
 $pivotData = [
