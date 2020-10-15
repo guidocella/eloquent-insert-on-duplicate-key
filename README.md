@@ -1,5 +1,25 @@
 # Laravel Insert On Duplicate Key And Insert Ignore
 
+This package is deprecated because `upsert` and `insertOrIgnore` have been added to Laravel.
+
+If you need the pivot functions, they are trivial to implement:
+
+```php
+BelongsToMany::macro('attachUpsert', function ($id, array $attributes = []) {
+    $this->newPivotStatement()->upsert($this->formatAttachRecords(
+        $this->parseIds($id),
+        $attributes
+    ), null);
+});
+
+BelongsToMany::macro('attachOrIgnore', function ($id, array $attributes = []) {
+    $this->newPivotStatement()->insertOrIgnore($this->formatAttachRecords(
+        $this->parseIds($id),
+        $attributes
+    ));
+});
+```
+
 This package provides macros to run INSERT ... ON DUPLICATE KEY UPDATE and INSERT IGNORE queries on models and pivot tables with Laravel's ORM Eloquent using MySql or MariaDB.
 
 ## Installation
